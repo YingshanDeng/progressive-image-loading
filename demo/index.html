@@ -1,29 +1,39 @@
 <!doctype html>
 <html>
-  <head>
+
+<head>
     <title>progressive-image-loading demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
+    <!-- stackblur 图片模糊库 -->
+    <script src="../bower_components/stackblur-canvas/dist/stackblur.min.js"></script>
     <link rel="import" href="../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../bower_components/iron-demo-helpers/demo-snippet.html">
-
     <link rel="import" href="../progressive-image-loading.html">
-
-    <style is="custom-style" include="demo-pages-shared-styles">
+    <style is="custom-style" include="demo-pages-shared-styles"></style>
+    <style>
+        progressive-image-loading {
+            width: 240px;
+            height: 240px;
+        }
     </style>
-  </head>
-  <body>
+</head>
 
+<body>
     <div class="vertical-section-container centered">
-      <h3>Basic progressive-image-loading Demo</h3>
-      <demo-snippet>
-        <template>
-          <progressive-image-loading></progressive-image-loading>
-        </template>
-      </demo-snippet>
+        <h3>Basic progressive-image-loading Demo</h3>
+        <demo-snippet>
+            <template>
+                <progressive-image-loading
+                    width="240"
+                    height="240"
+                    thumbnail-url="http://localhost:9999/images/duola.jpeg"
+                    display-url="http://localhost:9999/images/duola.jpeg">
+                    </progressive-image-loading>
+            </template>
+        </demo-snippet>
     </div>
+</body>
 
-  </body>
 </html>

@@ -9,7 +9,7 @@ First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polyme
 ## Viewing Your Application
 
 ```
-$ polymer serve
+$ polymer serve --port 9999
 ```
 
 > 注：默认是在 8080 端口，添加 `--port` 可以指定参数

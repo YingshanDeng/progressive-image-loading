@@ -1,27 +1,107 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 
 <dom-module id="progressive-image-loading">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]</h2>
-  </template>
+    <template>
+        <style>
+        :host {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  <script>
+        #canvas {
+            max-width: 100%;
+            max-height: 100%;
+            opacity: 0;
+            transition: opacity 350ms linear;
+        }
+        #canvas.show-thumbnail,
+        #display.show-display {
+            opacity: 1;
+        }
+        #display {
+            position: absolute;
+            display: block;
+            left: 0px;
+            top: 0;
+            opacity: 0;
+            transition: opacity 300ms linear;
+        }
+
+        </style>
+        <img id="thumbnail" src="[[thumbnailUrl]]" alt="" style="display:none;">
+        <img id="display" src="" alt="">
+        <canvas id="canvas" width="[[width]]" height="[[height]]"></canvas>
+    </template>
+    <script>
     Polymer({
 
-      is: 'progressive-image-loading',
+        is: 'progressive-image-loading',
 
-      properties: {
-        prop1: {
-          type: String,
-          value: 'progressive-image-loading',
+        properties: {
+            // 图片模糊所需的小图
+            thumbnailUrl: String,
+            // 图片展示的大图
+            displayUrl: String,
+            // canvas 宽度
+            width: Number,
+            // canvas 高度
+            height: Number
         },
-      },
+        ready() {
+            this.thumbnailImg = this.$.thumbnail;
+            this.displayImg = this.$.display;
+
+            // 初始化canvas
+            this.cvs = this.$.canvas;
+            this.ctx = this.cvs.getContext('2d');
+            this.ctx.fillStyle = '#eee';
+            this.ctx.fillRect(0, 0, this.width, this.height);
+        },
+        attached() {
+            var that = this,
+                _loadThumbnailPromise = new Promise(function(resolve, reject) {
+                    if (that.thumbnailImg.complete) {
+                        resolve();
+                    } else {
+                        that.thumbnailImg.onload = function() {
+                            resolve();
+                        };
+                        that.thumbnailImg.onerror = function() {
+                            reject();
+                        };
+                    }
+                });
+
+            _loadThumbnailPromise.then(function () {
+                 // resolve
+                 that.ctx.drawImage(that.thumbnailImg,
+                    0, 0, that.thumbnailImg.width, that.thumbnailImg.height,
+                    0, 0, that.width, that.height);
+                 // 1、模糊展示小图
+                 StackBlur.canvasRGB(that.cvs, 0, 0, that.width, that.height, 20);
+                 that.cvs.classList.add('show-thumbnail')
+
+                 // 2、加载大图
+                 that.displayImg.onload = function () {
+                    // 为了展示效果，setTimeout，实际使用时要去掉
+                    setTimeout(function () {
+                        that.displayImg.classList.add('show-display');
+                        that.cvs.classList.remove('show-thumbnail');
+                    }, 2000)
+                 };
+                 that.displayImg.onerror = function () {
+                    // 大图加载失败
+                 };
+                 that.displayImg.src = that.displayUrl
+            }, function () {
+                // reject
+                // 缩略图加载失败
+                that.cvs.classList.add('show-thumbnail')
+            });
+        }
 
     });
-  </script>
+    </script>
 </dom-module>
